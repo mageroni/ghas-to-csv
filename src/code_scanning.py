@@ -30,19 +30,22 @@ def list_repo_cs_alerts(api_endpoint, github_pat, repo_name):
     # create an array of duplicates
     duplicate_alerts = []
 
+    all_alerts_instances = []
+
     # iterate through all the alerts
     for alert in code_scanning_alerts:
         # create a flag for the alert
         alert_found = False
 
-        # Get particular code scanning alert
-        # url = f"{api_endpoint}/repos/{repo_name}/code-scanning/alerts/{alert['number']}"
-        # code_scanning_alert = api_helpers.make_api_call(url, github_pat)
+        # Get instances of a code scanning alert
+        instances_url = f"{api_endpoint}/repos/{repo_name}/code-scanning/alerts/{alert['number']}/instances"
+        code_scanning_instances = api_helpers.make_api_call(instances_url, github_pat)
+        all_alerts_instances.append(code_scanning_instances)
         
         # iterate through the unique_alerts array
         for unique_alert in unique_alerts:
             # check if the alert is unique
-            if alert["most_recent_instance"]["location"]["path"] == unique_alert["most_recent_instance"]["location"]["path"] and alert["most_recent_instance"]["location"]["start_line"] == unique_alert["most_recent_instance"]["location"]["start_line"]:
+            if alert["most_recent_instance"]["location"]["path"] == unique_alert["most_recent_instance"]["location"]["path"]: # and alert["most_recent_instance"]["location"]["start_line"] == unique_alert["most_recent_instance"]["location"]["start_line"]:
                 # add the alert to the duplicate alert array
                 duplicate_alerts.append(alert)
                 # set the flag to true
@@ -53,6 +56,10 @@ def list_repo_cs_alerts(api_endpoint, github_pat, repo_name):
         # if the alert is not unique, add it to the unique alert array
         if alert_found == False:
             unique_alerts.append(alert)
+
+    # sustitute code_scanning_alerts["instances_url"] with the array of instances
+    for i in range(len(code_scanning_alerts)):
+        code_scanning_alerts[i]["instances_url"] = all_alerts_instances[i]
 
     print(f"Found {len(unique_alerts)} Unique alerts and {len(duplicate_alerts)} duplicate code scanning alerts in {repo_name}")
     return code_scanning_alerts
@@ -97,6 +104,7 @@ def write_repo_cs_list(cs_list):
             ]
         )
         for cs in cs_list:
+            
             writer.writerow(
                 [
                     cs["number"],

@@ -42,13 +42,14 @@ def list_repo_cs_alerts(api_endpoint, github_pat, repo_name):
         # iterate through the unique_alerts array
         for unique_alert in unique_alerts:
             # check if the alert is unique
-            if alert["most_recent_instance"]["location"]["path"] == unique_alert["most_recent_instance"]["location"]["path"]:
-                # add the alert to the duplicate alert array
-                duplicate_alerts.append(alert)
-                # set the flag to true
-                alert_found = True
-                # break out of the loop
-                break
+            if alert["ref"] == "refs/heads/main":
+                if alert["most_recent_instance"]["location"]["path"] == unique_alert["most_recent_instance"]["location"]["path"] and alert["rule"]["id"] == unique_alert["rule"]["id"]:
+                    # add the alert to the duplicate alert array
+                    duplicate_alerts.append(alert)
+                    # set the flag to true
+                    alert_found = True
+                    # break out of the loop
+                    break
 
         # if the alert is not unique, add it to the unique alert array
         if alert_found == False:

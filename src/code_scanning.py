@@ -42,20 +42,19 @@ def list_repo_cs_alerts(api_endpoint, github_pat, repo_name):
         # iterate through the unique_alerts array
         for unique_alert in unique_alerts:
             # check if the alert is unique
-            if alert["ref"] == "refs/heads/main":
-                if alert["most_recent_instance"]["location"]["path"] == unique_alert["most_recent_instance"]["location"]["path"] and alert["rule"]["id"] == unique_alert["rule"]["id"]:
-                    # add the alert to the duplicate alert array
-                    duplicate_alerts.append(alert)
-                    # set the flag to true
-                    alert_found = True
-                    # break out of the loop
-                    break
+            if alert["most_recent_instance"]["location"]["path"] == unique_alert["most_recent_instance"]["location"]["path"] and alert["rule"]["id"] == unique_alert["rule"]["id"]:
+                # add the alert to the duplicate alert array
+                duplicate_alerts.append(alert)
+                # set the flag to true
+                alert_found = True
+                # break out of the loop
+                break
 
         # if the alert is not unique, add it to the unique alert array
         if alert_found == False:
             unique_alerts.append(alert)
 
-    print(f"Found {len(unique_alerts)} Unique alerts and {len(duplicate_alerts)} code scanning alerts in {repo_name}")
+    print(f"Found {len(unique_alerts)} Unique alerts and {len(duplicate_alerts)} duplicate code scanning alerts in {repo_name}")
     return code_scanning_alerts
 
 
@@ -93,6 +92,7 @@ def write_repo_cs_list(cs_list):
                 "most_recent_instance_ref",
                 "most_recent_instance_state",
                 "most_recent_instance_sha",
+                "most_recent_instance_path",
                 "instances_url",
             ]
         )
@@ -118,6 +118,7 @@ def write_repo_cs_list(cs_list):
                     cs["most_recent_instance"]["ref"],
                     cs["most_recent_instance"]["state"],
                     cs["most_recent_instance"]["commit_sha"],
+                    cs["most_recent_instance"]["location"]["path"],
                     cs["instances_url"],
                 ]
             )

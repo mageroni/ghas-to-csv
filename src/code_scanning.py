@@ -19,7 +19,38 @@ def list_repo_cs_alerts(api_endpoint, github_pat, repo_name):
     """
     url = f"{api_endpoint}/repos/{repo_name}/code-scanning/alerts?per_page=100&page=1"
     code_scanning_alerts = api_helpers.make_api_call(url, github_pat)
-    print(f"Found {len(code_scanning_alerts)} code scanning alerts in {repo_name}")
+
+    # iterate code_scanning_alerts and check if the location of the alert is unique, if so, plus add in to one array
+    # if not, then add in to the array of duplicates
+    # return both arrays
+
+    # create an array of unique alerts
+    unique_alerts = []
+
+    # create an array of duplicates
+    duplicate_alerts = []
+
+    # iterate through all the alerts
+    for alert in code_scanning_alerts:
+        # create a flag for the alert
+        alert_found = False
+
+        # iterate through the unique_alerts array
+        for unique_alert in unique_alerts:
+            # check if the alert is unique
+            if alert["location"]["path"] == unique_alert["location"]["path"] and alert["rule"]["id"] == unique_alert["rule"]["id"]:
+                # add the alert to the duplicate alert array
+                duplicate_alerts.append(alert)
+                # set the flag to true
+                alert_found = True
+                # break out of the loop
+                break
+
+        # if the alert is not unique, add it to the unique alert array
+        if alert_found == False:
+            unique_alerts.append(alert)
+
+    print(f"Found {len(unique_alerts)} Unique alerts and {len(duplicate_alerts)} code scanning alerts in {repo_name}")
     return code_scanning_alerts
 
 

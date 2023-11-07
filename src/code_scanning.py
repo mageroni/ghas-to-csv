@@ -35,10 +35,14 @@ def list_repo_cs_alerts(api_endpoint, github_pat, repo_name):
         # create a flag for the alert
         alert_found = False
 
+        # Get particular code scanning alert
+        # url = f"{api_endpoint}/repos/{repo_name}/code-scanning/alerts/{alert['number']}"
+        # code_scanning_alert = api_helpers.make_api_call(url, github_pat)
+        
         # iterate through the unique_alerts array
         for unique_alert in unique_alerts:
             # check if the alert is unique
-            if alert["location"]["path"] == unique_alert["location"]["path"] and alert["rule"]["id"] == unique_alert["rule"]["id"]:
+            if alert["most_recent_instance"]["location"]["path"] == unique_alert["most_recent_instance"]["location"]["path"] and alert["rule"]["id"] == unique_alert["rule"]["id"]:
                 # add the alert to the duplicate alert array
                 duplicate_alerts.append(alert)
                 # set the flag to true
